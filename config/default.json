@@ -1,0 +1,15 @@
+{
+  "Config": {
+    "app": {
+      "port": 8081,
+      "logLevel": "trace",
+      "host": "localhost"
+    },
+    "elasticSearch": {
+      "URL": "",
+      "index": "capsules",
+      "username": "",
+      "password": ""
+    }
+  }
+}

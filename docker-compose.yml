@@ -1,46 +1,54 @@
 version: '3.6'
 services:
   #================================= DEVELOPMENT =============================================
-  app-dev:
+  app-elastic-dev:
     build:
       context: .
       target: development
     depends_on:
-      - 'postgres'
+      - elasticsearch
+    networks:
+      - esnet
     ports:
-      - '8000:8000'
+      - 8081:8081
     env_file:
       - ./.env
     environment:
-      - POSTGRES_CONNECTION_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
+      ES_URL: http://${ES_HOST}:${ES_PORT}
     volumes:
       - ./:/app/
       - /app/node_modules
   #================================= PRODUCTION =============================================
-  app-prod:
+  app-elastic-prod:
     build:
       context: .
       target: production
     depends_on:
-      - 'postgres'
+      - elasticsearch
+    networks:
+      - esnet
     ports:
-      - '8080:8080'
+      - 8082:8082
     env_file:
       - ./.env
     environment:
-      - POSTGRES_CONNECTION_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}
-      - NODE_ENV=production
-  #================================= POSTGRES DB =============================================
+      ES_URL: http://${ES_HOST}:${ES_PORT}
+      NODE_ENV: production
+  #================================= ELASTIC SEARCH =============================================
   elasticsearch:
     container_name: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.0
-    restart: always
+    image: elasticsearch:8.5.0
+    networks:
+      - esnet
+    ports:
+      - '${ES_PORT}:${ES_PORT}'
     env_file:
       - ./.env
-    ports:
-      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
-    volumes:
-      # When the PostgreSQL container is started it will run any scripts
-      # provided in the `docker-entrypoint-initdb.d` directory, this connects
-      # our seed file to that directory so that it gets run
-      - ./database-seed.sql:/docker-entrypoint-initdb.d/database-seed.sql
+    environment:
+      bootstrap.memory_lock: 'true'
+      discovery.type: 'single-node'
+      xpack.security.enabled: 'true'
+      ELASTIC_PASSWORD: '${ES_PASSWORD}'
+      ES_JAVA_OPTS: '-Xms512m -Xmx512m'
+networks:
+  esnet:
