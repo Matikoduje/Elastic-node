@@ -2,6 +2,7 @@ version: '3.6'
 services:
   #================================= DEVELOPMENT =============================================
   app-elastic-dev:
+    container_name: elastic-dev
     build:
       context: .
       target: development
@@ -15,11 +16,13 @@ services:
       - ./.env
     environment:
       ES_URL: http://${ES_HOST}:${ES_PORT}
+      REQUEST_URL: http://app-dev:8000/sync
     volumes:
       - ./:/app/
       - /app/node_modules
   #================================= PRODUCTION =============================================
   app-elastic-prod:
+    container_name: elastic-prod
     build:
       context: .
       target: production
@@ -33,6 +36,7 @@ services:
       - ./.env
     environment:
       ES_URL: http://${ES_HOST}:${ES_PORT}
+      REQUEST_URL: http://app-prod:8080/sync
       NODE_ENV: production
   #================================= ELASTIC SEARCH =============================================
   elasticsearch:
@@ -50,5 +54,8 @@ services:
       xpack.security.enabled: 'true'
       ELASTIC_PASSWORD: '${ES_PASSWORD}'
       ES_JAVA_OPTS: '-Xms512m -Xmx512m'
+
 networks:
   esnet:
+    name: ninja_network
+    external: true

@@ -3,13 +3,16 @@
     "app": {
       "port": 8081,
       "logLevel": "trace",
-      "host": "localhost"
+      "host": "localhost",
+      "syncInterval": "*/1 * * * *"
     },
     "elasticSearch": {
       "URL": "",
-      "index": "capsules",
       "username": "",
       "password": ""
+    },
+    "request": {
+      "URL": ""
     }
   }
 }

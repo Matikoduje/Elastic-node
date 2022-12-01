@@ -1,4 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
+import elasticClient from './elastic-client';
 import logger from '../log/_logger';
 
 const elasticCreateIndex = async (client: Client, index: string) => {
@@ -18,8 +19,6 @@ const elasticSetMapping = async (
 ) => {
   const mappingOptions = {
     index,
-    type: index,
-    include_type_name: true,
     body: {
       properties: schema
     }
@@ -33,4 +32,12 @@ const elasticSetMapping = async (
   }
 };
 
-export { elasticCreateIndex, elasticSetMapping };
+export const prepareMappingForIndex = async (index: string, schema: object) => {
+  const isIndexExists = await elasticClient.indices.exists({
+    index
+  });
+  if (!isIndexExists) {
+    await elasticCreateIndex(elasticClient, index);
+    await elasticSetMapping(elasticClient, schema, index);
+  }
+};
