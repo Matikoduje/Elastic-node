@@ -1,0 +1,18 @@
+{
+  "Config": {
+    "app": {
+      "port": 8081,
+      "logLevel": "trace",
+      "host": "localhost",
+      "syncInterval": "*/1 * * * *"
+    },
+    "elasticSearch": {
+      "URL": "",
+      "username": "",
+      "password": ""
+    },
+    "request": {
+      "URL": ""
+    }
+  }
+}

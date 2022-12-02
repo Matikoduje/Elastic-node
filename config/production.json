@@ -1,0 +1,9 @@
+{
+  "Config": {
+    "app": {
+      "port": 8082,
+      "logLevel": "info",
+      "syncInterval": "0 0 */1 * * *"
+    }
+  }
+}

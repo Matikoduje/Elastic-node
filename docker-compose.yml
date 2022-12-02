@@ -1,0 +1,61 @@
+version: '3.6'
+services:
+  #================================= DEVELOPMENT =============================================
+  app-elastic-dev:
+    container_name: elastic-dev
+    build:
+      context: .
+      target: development
+    depends_on:
+      - elasticsearch
+    networks:
+      - esnet
+    ports:
+      - 8081:8081
+    env_file:
+      - ./.env
+    environment:
+      ES_URL: http://${ES_HOST}:${ES_PORT}
+      REQUEST_URL: http://app-dev:8000/sync
+    volumes:
+      - ./:/app/
+      - /app/node_modules
+  #================================= PRODUCTION =============================================
+  app-elastic-prod:
+    container_name: elastic-prod
+    build:
+      context: .
+      target: production
+    depends_on:
+      - elasticsearch
+    networks:
+      - esnet
+    ports:
+      - 8082:8082
+    env_file:
+      - ./.env
+    environment:
+      ES_URL: http://${ES_HOST}:${ES_PORT}
+      REQUEST_URL: http://app-prod:8080/sync
+      NODE_ENV: production
+  #================================= ELASTIC SEARCH =============================================
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.5.0
+    networks:
+      - esnet
+    ports:
+      - '${ES_PORT}:${ES_PORT}'
+    env_file:
+      - ./.env
+    environment:
+      bootstrap.memory_lock: 'true'
+      discovery.type: 'single-node'
+      xpack.security.enabled: 'true'
+      ELASTIC_PASSWORD: '${ES_PASSWORD}'
+      ES_JAVA_OPTS: '-Xms512m -Xmx512m'
+
+networks:
+  esnet:
+    name: ninja_network
+    external: true

@@ -1,0 +1,12 @@
+{
+  "Config": {
+    "elasticSearch": {
+      "URL": "ES_URL",
+      "username": "ES_USERNAME",
+      "password": "ES_PASSWORD"
+    },
+    "request": {
+      "URL": "REQUEST_URL"
+    }
+  }
+}
