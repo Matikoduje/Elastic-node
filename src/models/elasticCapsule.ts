@@ -1,5 +1,13 @@
 import elasticClient from '../db/elastic-client';
 
+export type capsuleDocument = {
+  id: number;
+  creator: string;
+  created_at: Date;
+  deleted_at: Date | null;
+  data: object;
+};
+
 export default class elasticCapsule {
   private static index = 'capsules';
   private static schema = {
@@ -54,5 +62,19 @@ export default class elasticCapsule {
 
   static getSchema() {
     return this.schema;
+  }
+
+  static async syncCapsules(capsules: capsuleDocument[]) {
+    const index = this.index;
+    return await elasticClient.helpers.bulk({
+      datasource: capsules,
+      refresh: true,
+      onDocument(doc: capsuleDocument) {
+        return [
+          { update: { _index: index, _id: doc.id.toString() } },
+          { doc_as_upsert: true }
+        ];
+      }
+    });
   }
 }

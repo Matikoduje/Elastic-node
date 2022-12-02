@@ -1,7 +1,7 @@
 import config from 'config';
 import app from './app/_app';
 import logger from './log/_logger';
-import { syncJob } from './cron/sync-job';
+import syncCapsulesJob from './cron/sync-job';
 import { prepareMappingForIndex } from './db/elastic-methods';
 import elasticCapsule from './models/elasticCapsule';
 import elasticEtag from './models/elasticTag';
@@ -22,7 +22,7 @@ async function startServer() {
   } catch (err) {
     logger.error({ err });
   } finally {
-    syncJob;
+    syncCapsulesJob;
     app.listen(port, () => {
       logger.info(`Server is listening on http://${host}:${port}`);
     });
